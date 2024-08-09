@@ -56,7 +56,11 @@
                                              <textarea name="des" id="content"><?= $product['des'] ?></textarea>
                                              <span></span>
                                          </div>
-                                         <div id="product_no_variant" style="display: <?php if($product['attribute_value_id'] != 0){echo 'none';}else{echo 'block';}?>;">
+                                         <div id="product_no_variant" style="display: <?php if ($product['attribute_value_id'] != 0) {
+                                                                                            echo 'none';
+                                                                                        } else {
+                                                                                            echo 'block';
+                                                                                        } ?>;">
                                              <div class="form-group">
                                                  <label for="price">Giá thường</label>
                                                  <input type="number" class="form-control" id="price" placeholder="Giá sản phẩm" name="price" value="<?= $product['price'] ?>">
@@ -73,15 +77,57 @@
                                                  <span></span>
                                              </div>
                                          </div>
-                                         <div id="<?php if($oldtype == 2){echo'product_variant';}; ?>" style="display: <?php if($product['attribute_value_id'] != 0){echo 'block';}else{echo 'none';}?>;">
-                                            <div class="row">
-                                                <div class="col5">
-                                                    <h4>Danh sách biến thể</h4>
+                                         <div id="<?php if ($oldtype == 2) {
+                                                        echo 'product_variant';
+                                                    }; ?>" style="display: <?php if ($product['attribute_value_id'] != 0) {
+                                                                                echo 'block';
+                                                                            } else {
+                                                                                echo 'none';
+                                                                            } ?>;">
+                                             <div class="row mt-3 border rounded p-2">
+                                                 <div class="col-12 d-flex justify-content-between align-items-center">
+                                                     <h4>Danh sách biến thể</h4>
+                                                     <a href="<?= BASE_URL_ADMIN . '?act=product-lookup-insert&id=' . $id ?>">Thêm phiên bản</a>
+                                                 </div>
+                                                 <div class="row mt-3 border rounded p-2" style="width: 100%;">
+                                                     <table class="table" style="width: 100%;">
+                                                         <thead>
+                                                             <tr>
+                                                                 <th scope="col">ID</th>
+                                                                 <th scope="col">Biến thể</th>
+                                                                 <th>Giá</th>
+                                                                 <th>Giá ưu đãi</th>
+                                                                 <th>Số lượng</th>
+                                                                 <th scope="col">Action</th>
+                                                             </tr>
+                                                         </thead>
+                                                         <tbody>
+                                                             <?php foreach ($result as $key => $value) : ?>
+                                                                 <tr>
+                                                                     <th scope="row"><?= $key ?></th>
 
-                                                </div>
-                                            </div>
+                                                                     <td>
+                                                                         |<?php foreach ($value['variants'] as $variant) : ?>
+                                                                         <?= $variant ?>|
+                                                                     <?php endforeach ?>
+                                                                     </td>
+                                                                     <td><?= $value['price'] ?></td>
+                                                                     <td><?= $value['sale_price'] ?></td>
+                                                                     <td><?= $value['quantity'] ?></td>
+                                                                     <td>
+                                                                         <a href="<?= BASE_URL_ADMIN . '?act=product-lookup-update&id=' . $id . '&idlk=' . $key ?>" class="btn btn-success">Sửa</a>
+                                                                         <a href="<?= BASE_URL_ADMIN . '?act=product-lookup-delete&id=' . $id . '&idlk=' . $key ?>" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn xóa không !')">Xóa</a>
+                                                                     </td>
+                                                                 </tr>
+                                                             <?php endforeach ?>
+                                                         </tbody>
+                                                     </table>
+                                                 </div>
+                                             </div>
                                          </div>
-                                         <div id="<?php if($oldtype == 1){echo'product_variant';}; ?>" style="display: none;">
+                                         <div id="<?php if ($oldtype == 1) {
+                                                        echo 'product_variant';
+                                                    }; ?>" style="display: none;">
                                              <div class="form-group">
                                                  <label for="exampleInputcategory_id1">Thuộc tính</label>
                                                  <select name="attribute_id" id="attributes" class="form-control" multiple>
@@ -91,7 +137,7 @@
                                                  </select>
                                                  <p id="addAttribute" class="btn btn-success mt-3">Cập nhật</p>
                                              </div>
-                                             
+
 
                                              <div id="dynamicFieldsContainer"></div>
 
@@ -157,7 +203,9 @@
                                              <label for="type">Loại sản phẩm</label>
                                              <select name="type_product" id="type" class="form-control">
                                                  <option value="1">Sản phẩm đơn giản</option>
-                                                 <option value="2" <?php if($product['attribute_value_id'] != 0){echo 'selected';}?>  >Sản phẩm biến thể</option>
+                                                 <option value="2" <?php if ($product['attribute_value_id'] != 0) {
+                                                                        echo 'selected';
+                                                                    } ?>>Sản phẩm biến thể</option>
                                              </select>
                                          </div>
                                      </div>

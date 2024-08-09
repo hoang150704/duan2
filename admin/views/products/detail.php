@@ -42,67 +42,6 @@
                           <p></p>
 
                           <hr>
-                          <!-- <h4>Available Colors</h4>
-              <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-default text-center active">
-                  <input type="radio" name="color_option" id="color_option_a1" autocomplete="off" checked>
-                  Green
-                  <br>
-                  <i class="fas fa-circle fa-2x text-green"></i>
-                </label>
-                <label class="btn btn-default text-center">
-                  <input type="radio" name="color_option" id="color_option_a2" autocomplete="off">
-                  Blue
-                  <br>
-                  <i class="fas fa-circle fa-2x text-blue"></i>
-                </label>
-                <label class="btn btn-default text-center">
-                  <input type="radio" name="color_option" id="color_option_a3" autocomplete="off">
-                  Purple
-                  <br>
-                  <i class="fas fa-circle fa-2x text-purple"></i>
-                </label>
-                <label class="btn btn-default text-center">
-                  <input type="radio" name="color_option" id="color_option_a4" autocomplete="off">
-                  Red
-                  <br>
-                  <i class="fas fa-circle fa-2x text-red"></i>
-                </label>
-                <label class="btn btn-default text-center">
-                  <input type="radio" name="color_option" id="color_option_a5" autocomplete="off">
-                  Orange
-                  <br>
-                  <i class="fas fa-circle fa-2x text-orange"></i>
-                </label>
-              </div>
-
-              <h4 class="mt-3">Size <small>Please select one</small></h4>
-              <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-default text-center">
-                  <input type="radio" name="color_option" id="color_option_b1" autocomplete="off">
-                  <span class="text-xl">S</span>
-                  <br>
-                  Small
-                </label>
-                <label class="btn btn-default text-center">
-                  <input type="radio" name="color_option" id="color_option_b2" autocomplete="off">
-                  <span class="text-xl">M</span>
-                  <br>
-                  Medium
-                </label>
-                <label class="btn btn-default text-center">
-                  <input type="radio" name="color_option" id="color_option_b3" autocomplete="off">
-                  <span class="text-xl">L</span>
-                  <br>
-                  Large
-                </label>
-                <label class="btn btn-default text-center">
-                  <input type="radio" name="color_option" id="color_option_b4" autocomplete="off">
-                  <span class="text-xl">XL</span>
-                  <br>
-                  Xtra-Large
-                </label>
-              </div> -->
 
                           <div class="bg-gray py-2 px-3 mt-4">
                               <?php if ($product['sale_price'] == 0) : ?>
@@ -128,6 +67,43 @@
                           </div>
                           <p class="mt-3">Danh mục: <?= $product['category_name'] ?></p>
                           <p>Mô tả: <?= $product['des'] ?></p>
+                      </div>
+                  </div>
+                  <div class="row mt-3 border rounded p-2" style="display: <?php if($product['attribute_value_id'] == 0){echo "none";} ?>;">
+                      <div class="col-12 d-flex justify-content-between align-items-center">
+                          <h4>Danh sách biến thể</h4>
+                          <a href="<?= BASE_URL_ADMIN . '?act=product-lookup-insert&id=' . $id ?>">Thêm phiên bản</a>
+                      </div>
+                      <div class="row mt-3 border rounded p-2" style="width: 100%;">
+                          <table class="table" style="width: 100%;">
+                              <thead>
+                                  <tr>
+                                      <th scope="col">ID</th>
+                                      <th scope="col">Biến thể</th>
+                                      <th>Giá</th>
+                                      <th>Giá ưu đãi</th>
+                                      <th>Số lượng</th>
+
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <?php foreach ($result as $key => $value) : ?>
+                                      <tr>
+                                          <th scope="row"><?= $key ?></th>
+
+                                          <td>
+                                              |<?php foreach ($value['variants'] as $variant) : ?>
+                                              <?= $variant ?>|
+                                          <?php endforeach ?>
+                                          </td>
+                                          <td><?= $value['price'] ?></td>
+                                          <td><?= $value['sale_price'] ?></td>
+                                          <td><?= $value['quantity'] ?></td>
+
+                                      </tr>
+                                  <?php endforeach ?>
+                              </tbody>
+                          </table>
                       </div>
                   </div>
                   <div class="row mt-4">

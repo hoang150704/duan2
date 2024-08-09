@@ -1,28 +1,31 @@
 <?php
 if (!function_exists('listAllForOrder')) {
-    function listAllForOrder($status_id = 0,$order_code_substring = '')
+    function listAllForOrder($status_id = 0, $order_code_substring = '')
     {
         try {
             //code...
 
-            $sql = "SELECT `order_shop`.`id`, `order_shop`.`order_code`, `order_shop`.`status_id`, `order_shop`.`account_id`, `order_shop`.`date_order`, `order_shop`.`total_money`, `order_shop`.`order_address`, `order_shop`.`order_phone`, `order_shop`.`order_account_name`, `status_order`.`status_order_name` AS `status_name`,`account`.`fullname` AS `fullname`
+            $sql = "SELECT `order_shop`.`id` , `order_shop`.`order_code`, `order_shop`.`status_id`, `order_shop`.`account_id`, `order_shop`.`date_order`, `order_shop`.`total_money`, `order_shop`.`order_address`, `order_shop`.`order_phone`, `order_shop`.`order_account_name`, `status_order`.`status_order_name` AS `status_name`,`account`.`fullname` AS `fullname`
             FROM `order_shop`
             INNER JOIN `status_order` ON `order_shop`.`status_id` = `status_order`.`id`
             INNER JOIN `account` ON `order_shop`.`account_id` = `account`.`id`
-            WHERE `order_shop`.`status` = 1";
+            WHERE `order_shop`.`status` = 1 ";
+            if ($status_id ==0) {
+                $sql .= "ORDER BY `order_shop`.`id` DESC";
+            }
             if ($status_id >= 1 && $status_id <= 11) {
-                $sql .= " AND `order_shop`.`status_id` = $status_id";
+                $sql .= " AND `order_shop`.`status_id` = $status_id ORDER BY `order_shop`.`id` DESC";
             }
             if (!empty($order_code_substring)) {
-                $sql .= " AND `order_shop`.`order_code` LIKE :order_code_substring";
+                $sql .= " AND `order_shop`.`order_code` LIKE :order_code_substring ORDER BY `order_shop`.`id` DESC";
             }
             $stmt = $GLOBALS['conn']->prepare($sql);
             if (!empty($order_code_substring)) {
                 $order_code_substring = "%$order_code_substring%";
                 $stmt->bindParam(':order_code_substring', $order_code_substring);
             }
-            
-            
+
+
 
             $stmt->execute();
 

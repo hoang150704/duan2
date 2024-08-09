@@ -56,6 +56,9 @@ match ($act) {
     'product-create'=>productCreate(),
     'product-update'=>productUpdate($_GET['id']),
     'product-delete'=>productDelete($_GET['id']),
+    'product-lookup-update'=>updateProductLookup($_GET['id'],$_GET['idlk']),
+    'product-lookup-insert'=>insertProductLookup($_GET['id']),
+    'product-lookup-delete'=>deleteProductLookup($_GET['id'],$_GET['idlk']),
 
     // Order
     'order'=>orderListAll(),

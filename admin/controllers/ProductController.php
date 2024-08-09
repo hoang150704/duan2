@@ -17,6 +17,30 @@ function productShowOne($id)
     $images = listImageOnProduct($id);
     $listComments = getComment($id);
     $countListComment = count($listComments);
+    $products = getProductLookup($id);
+    foreach ($products as $item) {
+        // Lấy các giá trị cần thiết
+        $product_lookup_id = $item['product_lookup_id'];
+        $product_lookup_price = $item['price'];
+        $product_lookup_sale_price = $item['sale_price'];
+        $product_lookup_quantity = $item['quantity'];
+        $attribute_value_name = $item['attribute_value_name'];
+        $attribute_name = $item['attribute_name'];
+
+        // Kiểm tra nếu product_lookup_id chưa có trong kết quả
+        if (!isset($result[$product_lookup_id])) {
+            $result[$product_lookup_id] = [
+                'product_lookup_id' => $product_lookup_id,
+                'price' => $product_lookup_price,
+                'sale_price' => $product_lookup_sale_price,
+                'quantity' => $product_lookup_quantity,
+                'variants' => []
+            ];
+        }
+
+        // Thêm variant vào kết quả
+        $result[$product_lookup_id]['variants'][] = $attribute_value_name;
+    }
     if (empty($product)) {
         e404();
     }
@@ -157,6 +181,8 @@ function productCreate()
     require_once PATH_VIEW_ADMIN . 'layouts/master.php';
 };
 
+
+
 // validateProductCreate
 function validateProductCreate($data, $valuesId)
 {
@@ -201,7 +227,39 @@ function productUpdate($id)
     $style = 'createproduct';
     $title = 'Thêm sản phẩm';
     $view = 'products/update';
+    $products = getProductLookup($id);
+
+    $result = [];
+
+    // Lặp qua từng phần tử trong mảng gốc
+    $result = [];
+
+    foreach ($products as $item) {
+        // Lấy các giá trị cần thiết
+        $product_lookup_id = $item['product_lookup_id'];
+        $product_lookup_price = $item['price'];
+        $product_lookup_sale_price = $item['sale_price'];
+        $product_lookup_quantity = $item['quantity'];
+        $attribute_value_name = $item['attribute_value_name'];
+        $attribute_name = $item['attribute_name'];
+
+        // Kiểm tra nếu product_lookup_id chưa có trong kết quả
+        if (!isset($result[$product_lookup_id])) {
+            $result[$product_lookup_id] = [
+                'product_lookup_id' => $product_lookup_id,
+                'price' => $product_lookup_price,
+                'sale_price' => $product_lookup_sale_price,
+                'quantity' => $product_lookup_quantity,
+                'variants' => []
+            ];
+        }
+
+        // Thêm variant vào kết quả
+        $result[$product_lookup_id]['variants'][] = $attribute_value_name;
+    }
+
     $product = getProductById($id);
+
     $attributes = listAll('attribute');
     foreach ($attributes as $attribute) {
         $listAllAttributeValues[$attribute['id']] = listAllAttributeById('attribute_value', $attribute['id']);
@@ -213,7 +271,9 @@ function productUpdate($id)
     }
     $images = listImageOnProduct($id);
     $categories = listAll('category');
+    // Nếu người dùng nhắn submit
     if (!empty($_POST)) {
+        // Lấy dữ liệu
         $type_product = $_POST['type_product'];
         $data = [
             'product_name' => $_POST['product_name'] ?? $product['product_name'],
@@ -222,6 +282,7 @@ function productUpdate($id)
             'main_image' => get_file_upload('main_image') ?? $product['main_image'],
             'status' => 1
         ];
+        // XỬ lí ảnh
         $main_image = $data['main_image'];
         if (is_array($main_image)) {
             $data['main_image'] = uploadFlie($main_image, 'uploads/products/');
@@ -257,7 +318,9 @@ function productUpdate($id)
             delete('image', $deleted_id);
         }
         // Cập nhật giá 
+        // Nếu 
         if ($type_product == $oldtype) {
+            // 
             if ($type_product == 1) {
                 $detail = [
                     'quantity' => $_POST['quantity'] ?? $product['quantity'],
@@ -275,6 +338,8 @@ function productUpdate($id)
                 }
                 update('product_lookup', $product['product_lookup_id'], $detail);
             } else {
+                // Xử lí sửa biến thể
+
             }
         } else {
             if ($type_product == 1) {
@@ -302,7 +367,7 @@ function productUpdate($id)
 
                 ];
                 insert('product_variant', $variant);
-            }else{
+            } else {
                 deleteProductById($id);
                 if (isset($_POST['variants'])) {
                     $variants2 = $_POST['variants'];
@@ -324,7 +389,6 @@ function productUpdate($id)
                         insert('product_variant', $variant);
                     }
                 }
-
             }
         }
 
@@ -334,7 +398,136 @@ function productUpdate($id)
     }
     require_once PATH_VIEW_ADMIN . 'layouts/master.php';
 };
+// Update lookup
+function updateProductLookup($id, $idlk)
+{
+    $script = 'create';
+    $script2 = 'tinyMCE';
+    $style = 'createproduct';
+    $title = 'Sửa biến thể #' . $idlk;
+    $view = 'products/update_lookup';
+    $lookup = getProductLookupById($idlk);
+    if (!empty($_POST)) {
+        $data = [
+            'price' => $_POST['price'],
+            'sale_price' => $_POST['sale_price'],
+            'quantity' => $_POST['quantity'],
+        ];
+        if ($data['price'] < $data['sale_price']) {
+            $errors[] = 'Giá không thể nhỏ hơn Giá ưu đãi';
+        }
+        if (empty($data['price'])) {
+            $data['price'] = 0;
+        }
+        if (empty($data['sale_price'])) {
+            $data['sale_price'] = 0;
+        }
+        if (empty($data['quantity'])) {
+            $data['quantity'] = 0;
+        }
+        if (!empty($errors)) {
+            $_SESSION['errors'] = $errors;
+            header('Location:' . BASE_URL_ADMIN . '?act=product-lookup-update&id=' . $id . '&idlk=' . $idlk);
+            exit();
+        }
+        update('product_lookup', $idlk, $data);
+        $_SESSION['success'] = 'Bạn đã sửa thành công';
+        header('Location:' . BASE_URL_ADMIN . '?act=product-lookup-update&id=' . $id . '&idlk=' . $idlk);
+        exit();
+    }
+    require_once PATH_VIEW_ADMIN . 'layouts/master.php';
+}
+// 
+function insertProductLookup($id)
+{
+    $script = 'create';
+    $script2 = 'tinyMCE';
+    $style = 'createproduct';
+    $title = 'Thêm biến thể';
+    $view = 'products/create_lookup';
+    $products = getProductLookup($id);
+    $convertedData = [];
 
+    foreach ($products as $item) {
+        $lookup_id = $item['lookup_id'];
+        $attribute_name = $item['attribute_name'];
+        $attribute_value_name = $item['attribute_value_name'];
+
+        if (!isset($convertedData[$lookup_id])) {
+            $convertedData[$lookup_id] = [];
+        }
+
+        if (!isset($convertedData[$lookup_id][$attribute_name])) {
+            $convertedData[$lookup_id][$attribute_name] = [];
+        }
+
+        $convertedData[$lookup_id][$attribute_name][] = $attribute_value_name;
+    }
+
+    foreach ($products as $item) {
+
+        $attribute = getAttributeByName($item['attribute_name']);
+        $attribute_names[$attribute['id']] = $item['attribute_name'];
+        $attribute_value[] = listAllAttributeById('attribute_value', $attribute['id']);
+    }
+    $flattened = [];
+    foreach ($attribute_value as $subArray) {
+        foreach ($subArray as $item) {
+            $flattened[] = $item;
+        }
+    }
+    $unique = [];
+    foreach ($flattened as $item) {
+        $unique[$item['id']] = $item;
+    }
+    $result = array_values($unique);
+    $attribute_names = array_unique($attribute_names);
+
+    // Kết thúc xử lí dữ liệu
+    if (!empty($_POST)) {
+        $lookup = [
+            'price' => $_POST['price'],
+            'sale_price' => $_POST['sale_price'],
+            'quantity' => $_POST['quantity'],
+        ];
+        $lookup_id = insert_get_last_id('product_lookup', $lookup);
+        foreach ($attribute_names as $key => $att) {
+            $data = [
+                'product_id' => $id,
+                'product_variant_id' => $lookup_id,
+                'attribute_value_id' => $_POST['attribute_' . $key]
+            ];
+            insert('product_variant', $data);
+        };
+        $_SESSION['success'] = 'Bạn đã thêm biến thể thành công';
+        header('Location:' . BASE_URL_ADMIN . '?act=product-update&id=' . $id);
+        exit();
+    }
+
+    require_once PATH_VIEW_ADMIN . 'layouts/master.php';
+}
+function deleteProductLookup($id, $idlk)
+{
+    deleteByProductLookupId($idlk);
+    $product_variant = getProductVairantByProductId($id);
+    if (empty($product_variant)) {
+        $data = [
+            'price' => 0,
+            'sale_price' => 0,
+            'quantity' => 0,
+        ];
+        $id_lookup = insert_get_last_id('product_lookup', $data);
+        $variant = [
+            'product_id' => $id,
+            'product_variant_id' => $id_lookup,
+            'attribute_value_id' => 0
+        ];
+        insert('product_variant', $variant);
+    }
+    $_SESSION['success'] = "Bạn đã xóa thành công biến thể";
+    header('Location:' . BASE_URL_ADMIN . '?act=product-update&id=' . $id);
+    exit();
+}
 // validate update
 function validateProductUpdate($data, $id)
 {

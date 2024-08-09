@@ -61,7 +61,7 @@ function productDetail($id)
         $result = $groupedData;
     }
     $product = $result[$id];
-
+    
 
     // Xử lí người dùng bình luận
     if (isset($_POST['submitcomment']) && $_SERVER['REQUEST_METHOD'] == 'POST') {

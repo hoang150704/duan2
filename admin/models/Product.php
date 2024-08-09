@@ -18,7 +18,7 @@ if (!function_exists('listAllForProduct')) {
                     INNER JOIN 
                     category ON product.category_id = category.id 
                     WHERE 
-                    product.status = 1;";
+                    product.status = 1 ORDER BY product.id DESC ";
 
             $stmt = $GLOBALS['conn']->prepare($sql);
 
@@ -69,6 +69,44 @@ if (!function_exists('deleteProductById')) {
         }
     }
 }
+// 
+if (!function_exists('deleteByProductLookupId')) {
+    function deleteByProductLookupId($product_lookup_id) {
+        try {
+            // Bắt đầu transaction
+            $GLOBALS['conn']->beginTransaction();
+
+            // Lưu lại product_variant_id trước khi xóa từ product_lookup
+            $sql = "SELECT `id` AS product_variant_id FROM `product_variant` WHERE `product_variant_id` = :product_lookup_id";
+            $stmt = $GLOBALS['conn']->prepare($sql);
+            $stmt->bindParam(':product_lookup_id', $product_lookup_id);
+            $stmt->execute();
+            $product_variant_ids = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+
+            if (!empty($product_variant_ids)) {
+                // Xóa từ bảng product_variant dựa trên product_variant_id
+                $sql = "DELETE FROM `product_variant` WHERE `id` IN (" . implode(',', array_fill(0, count($product_variant_ids), '?')) . ")";
+                $stmt = $GLOBALS['conn']->prepare($sql);
+                $stmt->execute($product_variant_ids);
+            }
+
+            // Xóa từ bảng product_lookup dựa trên id
+            $sql = "DELETE FROM `product_lookup` WHERE `id` = :product_lookup_id";
+            $stmt = $GLOBALS['conn']->prepare($sql);
+            $stmt->bindParam(':product_lookup_id', $product_lookup_id);
+            $stmt->execute();
+
+            // Commit transaction
+            $GLOBALS['conn']->commit();
+
+        } catch (\Exception $e) {
+            // Rollback nếu có lỗi
+            $GLOBALS['conn']->rollBack();
+            debug($e);
+        }
+    }
+}
+
 // 
 if (!function_exists('getVariantByLookupId')) {
     function getVariantByLookupId($id)
@@ -124,6 +162,91 @@ if (!function_exists('listImageOnProduct')) {
             $stmt->bindParam(":product_id", $id);
             $stmt->execute();
 
+            return $stmt->fetchAll();
+        } catch (\Exception $e) {
+            //throw $th;
+            debug($e);
+        }
+    }
+}
+// 
+// Lấy tên các biến thể
+if (!function_exists('getProductLookupById')) {
+    function getProductLookupById($id)
+    {
+        try {
+            //Nếu không trùng trả về true
+
+            $sql = "SELECT * FROM product_lookup WHERE id = :id";
+
+            $stmt = $GLOBALS['conn']->prepare($sql);
+            $stmt->bindParam(":id", $id);
+            $stmt->execute();
+            return $stmt->fetch();
+        } catch (\Exception $e) {
+            //throw $th;
+            debug($e);
+        }
+    }
+}
+// Lấy tên các biến thể
+if (!function_exists('getProductVairantByProductId')) {
+    function getProductVairantByProductId($id)
+    {
+        try {
+            //Nếu không trùng trả về true
+
+            $sql = "SELECT * FROM product_variant WHERE product_id = :id";
+
+            $stmt = $GLOBALS['conn']->prepare($sql);
+            $stmt->bindParam(":id", $id);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (\Exception $e) {
+            //throw $th;
+            debug($e);
+        }
+    }
+}
+if (!function_exists('getProductLookup')) {
+    function getProductLookup($id)
+    {
+        try {
+            //Nếu không trùng trả về true
+
+            $sql = "SELECT 
+            product.id,
+            product.product_name,
+            product.category_id,
+            product.des,
+            product.main_image,
+            product.status,
+            product_variant.id as product_variant,
+            product_variant.product_variant_id AS product_lookup_id,
+            product_variant.attribute_value_id,
+            attribute_value.attribute_value_name,
+            attribute.attribute_name,
+            product_lookup.id as lookup_id,
+            product_lookup.price,
+            product_lookup.sale_price,
+            product_lookup.quantity
+            FROM 
+                product
+            INNER JOIN 
+                product_variant ON product.id = product_variant.product_id
+            INNER JOIN 
+                product_lookup ON product_variant.product_variant_id = product_lookup.id
+            INNER JOIN 
+                attribute_value ON product_variant.attribute_value_id = attribute_value.id
+            INNER JOIN 
+                attribute ON attribute_value.attribute_id = attribute.id
+            WHERE 
+                product.id = :id
+            LIMIT 0, 25";
+
+            $stmt = $GLOBALS['conn']->prepare($sql);
+            $stmt->bindParam(":id", $id);
+            $stmt->execute();
             return $stmt->fetchAll();
         } catch (\Exception $e) {
             //throw $th;

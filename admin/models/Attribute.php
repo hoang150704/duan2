@@ -21,6 +21,27 @@ if(!function_exists('checkSameAttributeName')){
     }
 }
 // 
+if(!function_exists('getAttributeByName')){
+    function getAttributeByName($attribute_name){
+        try {
+            //Nếu không trùng trả về true
+           
+            $sql = "SELECT * FROM `attribute` WHERE attribute_name = :attribute_name LIMIT 1" ;
+
+            $stmt = $GLOBALS['conn']->prepare($sql);
+            $stmt->bindParam(":attribute_name",$attribute_name);
+
+            $stmt->execute();
+
+            $data = $stmt ->fetch();
+            return $data;
+        } catch (\Exception $e) {
+            //throw $th;
+            debug($e);
+        }
+    }
+}
+// 
 if(!function_exists('checkSameAttributeNameById')){
     function checkSameAttributeNameById($tableName,$attribute_name,$id){
         try {
