@@ -14,12 +14,17 @@ require_file(PATH_MODEL);
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
+if(empty($_GET['search'])){
+    $search='';
+}else{
+    $search = $_GET['search'];
+}
 // Điều hướng
 $act=$_GET['act'] ?? '/';
 checkCheckout($act);
 checkLoginRequired($act);
 match ($act) {
-    '/' =>homeController(),
+    '/' =>homeController($search),
     // Tài khoản
     'login'=>showFormLoginController(), 
     'logout'=>logoutUser(),
@@ -49,7 +54,7 @@ match ($act) {
     'success'=>successOrder(),
     'payment'=>successOrderPayment($_GET['id'],$_GET['check'],$_GET['vnp_TxnRef'],$_GET['vnp_ResponseCode']),
     // 
-    'search'=>search(),
+    'search'=>search($_GET['content']),
     // Nếu không
     default => err()
 

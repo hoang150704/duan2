@@ -158,6 +158,8 @@ function productList($id)
     $style = 'style/home';
     $script = 'home';
     $listProducts = listProductByCategory($id);
+    $category = showOne('category',$id);
+    
 
     require_once PATH_VIEW . 'layouts/master.php';
 }
