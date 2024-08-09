@@ -118,23 +118,23 @@
                                                                 ?>
                                                             </ul>
                                                         </div>
-                                                        
+
                                                     </div>
                                                     <!-- /.user-block -->
                                                     <div class="">
-                                                        
 
-                                                            <p><?= $comment['comment_content'] ?></p>
 
-                                                            <p>
-                                                                <?php if ($comment['reply'] == null) : ?>
-                                                            <p></p>
-                                                        <?php else : ?>
-                                                            <p class="alert alert-success">Admin: <?= $comment['reply'] ?></p>
+                                                        <p><?= $comment['comment_content'] ?></p>
 
-                                                        <?php endif ?>
-                                                        </p>
-                                                       
+                                                        <p>
+                                                            <?php if ($comment['reply'] == null) : ?>
+                                                        <p></p>
+                                                    <?php else : ?>
+                                                        <p class="alert alert-success">Admin: <?= $comment['reply'] ?></p>
+
+                                                    <?php endif ?>
+                                                    </p>
+
                                                     </div>
                                                 </div>
                                             <?php endforeach ?>
@@ -174,13 +174,24 @@
                                                                         </div>
                                                                         <hr class="custom-hr">
                                                                         <?php foreach ($order['details'] as $detail) : ?>
+                                                                            <?php $variants[$detail['product_lookup_id']] = getVariantByLookupId($detail['product_lookup_id']); ?>
                                                                             <div class="row">
                                                                                 <!-- Sản phẩm -->
                                                                                 <div class="col-2">
                                                                                     <img src="<?= BASE_URL . $detail['image'] ?>" class="border rounded" alt="">
                                                                                 </div>
                                                                                 <div class="col-8">
-                                                                                    <h5><?= $detail['product_name'] ?></h5>
+                                                                                    <?php if (empty($variants[$detail['product_lookup_id']])) : ?>
+                                                                                        <td class="product_name"><a href="#"><?= $detail['product_name'] ?></a></td>
+                                                                                    <?php else : ?>
+                                                                                        <td class="product_name"><a href="#"><?= $detail['product_name'] ?></a>
+                                                                                            <p>|
+                                                                                                <?php foreach ($variants[$detail['product_lookup_id']] as $variant) : ?>
+                                                                                                    <?= $variant['attribute_value_name'] ?> |
+                                                                                                <?php endforeach ?>
+                                                                                            </p>
+                                                                                        </td>
+                                                                                    <?php endif ?>
                                                                                     <p>Số lượng: <?= $detail['detail_quantity'] ?></p>
                                                                                 </div>
                                                                                 <div class="col-2 d-flex justify-content-between">

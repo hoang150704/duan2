@@ -56,7 +56,7 @@
                                              <textarea name="des" id="content"><?= $product['des'] ?></textarea>
                                              <span></span>
                                          </div>
-                                         <div id="product_no_variant" style="display: block;">
+                                         <div id="product_no_variant" style="display: <?php if($product['attribute_value_id'] != 0){echo 'none';}else{echo 'block';}?>;">
                                              <div class="form-group">
                                                  <label for="price">Giá thường</label>
                                                  <input type="number" class="form-control" id="price" placeholder="Giá sản phẩm" name="price" value="<?= $product['price'] ?>">
@@ -72,23 +72,16 @@
                                                  <input type="number" class="form-control" id="quantity" placeholder="Số lượng sản phẩm" name="quantity" value="<?= $product['quantity'] ?>">
                                                  <span></span>
                                              </div>
-                                             <!-- <div class="form-group row" id="class-variant">
-                                                 <div class="col-3">
-                                                     <label for="">Tên thuộc tính</label>
-                                                     <input type="text" id="form-control" placeholder="Nhập tên thuộc tính">
-                                                 </div>
-                                                 <div class="col-1"></div>
-                                                 <div class="col-8" id="group">
-                                                     <label for="">Giá trị thuộc tính</label>
-                                                     <div class="variant_input">
-                                                         <ul>
-                                                             <input type="text" id="inputVariant" class="" placeholder="">
-                                                         </ul>
-                                                     </div>
-                                                 </div>
-                                             </div> -->
                                          </div>
-                                         <div id="product_variant" style="display: none;">
+                                         <div id="<?php if($oldtype == 2){echo'product_variant';}; ?>" style="display: <?php if($product['attribute_value_id'] != 0){echo 'block';}else{echo 'none';}?>;">
+                                            <div class="row">
+                                                <div class="col5">
+                                                    <h4>Danh sách biến thể</h4>
+
+                                                </div>
+                                            </div>
+                                         </div>
+                                         <div id="<?php if($oldtype == 1){echo'product_variant';}; ?>" style="display: none;">
                                              <div class="form-group">
                                                  <label for="exampleInputcategory_id1">Thuộc tính</label>
                                                  <select name="attribute_id" id="attributes" class="form-control" multiple>
@@ -98,7 +91,7 @@
                                                  </select>
                                                  <p id="addAttribute" class="btn btn-success mt-3">Cập nhật</p>
                                              </div>
-
+                                             
 
                                              <div id="dynamicFieldsContainer"></div>
 
@@ -164,7 +157,7 @@
                                              <label for="type">Loại sản phẩm</label>
                                              <select name="type_product" id="type" class="form-control">
                                                  <option value="1">Sản phẩm đơn giản</option>
-                                                 <option value="2">Sản phẩm biến thể</option>
+                                                 <option value="2" <?php if($product['attribute_value_id'] != 0){echo 'selected';}?>  >Sản phẩm biến thể</option>
                                              </select>
                                          </div>
                                      </div>

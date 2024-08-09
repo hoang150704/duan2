@@ -40,7 +40,7 @@ if (!function_exists('showOneForOrder')) {
         try {
             //code...
 
-            $sql = "SELECT `order_shop`.`id` , `order_shop`.`status_id`, `order_shop`.`account_id`,`order_shop`.`shipping`, `order_shop`.`date_order`, `order_shop`.`total_money`, `order_shop`.`order_address`, `order_shop`.`order_phone`, `order_shop`.`order_account_name`,`order_shop`.`note`, `status_order`.`status_order_name` AS `status_name`
+            $sql = "SELECT `order_shop`.`id` ,`order_shop`.`order_email`,`order_shop`.`order_code`, `order_shop`.`status_id`, `order_shop`.`account_id`,`order_shop`.`shipping`, `order_shop`.`date_order`, `order_shop`.`total_money`, `order_shop`.`order_address`, `order_shop`.`order_phone`, `order_shop`.`order_account_name`,`order_shop`.`note`, `status_order`.`status_order_name` AS `status_name`
             FROM `order_shop`
             INNER JOIN `status_order` ON `order_shop`.`status_id` = `status_order`.`id`
             WHERE `order_shop`.`status` = 1 AND order_shop.id = :id ";

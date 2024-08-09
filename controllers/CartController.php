@@ -17,6 +17,7 @@ function cartView()
             $totalPrice += $item['price'] * $item['quantity'];
             $variants[$item['product_lookup_id']] = getVariantByLookupId($item['product_lookup_id']);
         }
+        
         // Lưu thông tin đơn hàng vào $_SESSION['order']
         $_SESSION['order'] = [
             'cart' => $_SESSION['cart'],

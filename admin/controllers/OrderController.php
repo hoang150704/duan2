@@ -2,7 +2,7 @@
 // orderListAll
 function orderListAll()
 {
-    $title = 'Danh sách tài khoản';
+    $title = 'Danh sách đơn hàng';
     $view = 'orders/list';
     $script = 'listUser';
     $style = 'table';
@@ -30,6 +30,7 @@ function orderShowOne($id)
     }
     $account = getAccountOnOrder($order['account_id']);
     $details = getDetailOnOrder($order['id']);
+  
     $i = 0;
     $allMoney = 0;
     foreach ($details as $detail) {
@@ -40,7 +41,7 @@ function orderShowOne($id)
 
     $script = 'detail';
     $style = 'table';
-    $title = 'Chi tiết tài khoản';
+    $title = 'Chi tiết đơn hàng';
     $view = 'orders/detail';
     require_once PATH_VIEW_ADMIN . 'layouts/master.php';
 };

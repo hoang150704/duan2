@@ -322,11 +322,78 @@ function infoUser()
         // Thêm dữ liệu đơn hàng vào mảng tổng hợp theo trạng thái
         $combinedData[$statusId]['orders'][] = $orderData;
     }
-
+    
 
 
     require_once PATH_VIEW . 'layouts/master.php';
 }
+// Đổi địa chỉ đơn hàng
+function changeAddress($id){
+    $view = 'authen/changeAdrress';
+    $style = 'style/info';
+    $script = 'info';
+    $order = getOrderById($id);
+    $arr = [1,2,10,11];
+    if(!in_array($order['status_id'],$arr)){
+        $_SESSION['errors'] = 'Bạn không thể sửa địa chỉ bây giờ';
+        header('Location:' . BASE_URL . '?act=detail-order&id='.$id);
+        exit;
+    }
+    
+    if(!empty($_POST)){
+        $data = [
+            'order_address' => $_POST['order_address'],
+            'order_phone' => $_POST['order_phone'],
+            'order_account_name' => $_POST['order_account_name'],
+            'note' => $_POST['note'],
+        ];
+        $errors = validateUpdateOrderAddress($data);
+
+        if (!empty($errors)) {
+            $_SESSION['errors'] = $errors;
+            header('Location:' . BASE_URL . '?act=change-address&id='.$id);
+            exit;
+        }else{
+            if(in_array($order['status_id'],$arr)){
+                update('order_shop',$id,$data);
+                $_SESSION['success'] = ' Bạn đã cập nhật thành công';
+            }else{
+                $_SESSION['errors'][0] = 'Đơn hàng không thể cập nhật vì không ở trạng thái được cập nhật địa chỉ';
+            }
+            
+            header('Location:' . BASE_URL . '?act=change-address&id='.$id);
+            exit;
+        }
+    }
+    require_once PATH_VIEW . 'layouts/master.php';
+}
+// Validate đơn ghàng
+function validateUpdateOrderAddress($data)
+{
+
+    $errors = [];
+    // fullname dài tối đa 50 kí tự và bắt buộc nhập
+    if (empty($data['order_account_name'])) {
+        $errors[] = 'Bạn cần nhập họ và tên người nhận hàng';
+    } else if (strlen($data['order_account_name']) > 50) {
+        $errors[] = 'Họ và tên chỉ được phép nhập tối đa 50 kí tự';
+    }
+    // phone
+    if (!empty($data['order_phone'])) {
+        if (!regaxPhone($data['order_phone'])) {
+            $errors[] = 'Số điện thoại chưa đúng định dạng';
+        }
+    } else {
+        $errors[] = 'Bạn cần nhập số điện thoại';
+    }
+    // ĐỊa chỉ đặt hàng 
+    if (empty($data['order_address'])) {
+        $errors[] = 'Bạn cần nhập địa chỉ nhận hàng';
+    }
+
+
+    return $errors;
+};
 // Đổi mật khẩu
 function changePassword()
 {

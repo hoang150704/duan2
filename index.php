@@ -29,6 +29,7 @@ match ($act) {
     'info'=>infoUser(),
     'detail-order'=>detailOrder($_GET['id']),
     // Đổi thông tin
+    'change-address'=>changeAddress($_GET['id']),
     'change-password'=>changePassword(),
     'change-password-success'=>changePasswordSuccess(),
     'update-user'=>updateUser(),

@@ -39,6 +39,7 @@
                                     <p>Họ tên: <?= $order['order_account_name'] ?></p>
                                     <p>Số điện thoại: <?= $order['order_phone'] ?></p>
                                     <p>Địa chỉ: <?= $order['order_address'] ?></p>
+                                    <p>Email: <?= $order['order_email'] ?></p>
                                 </div>
                             </div>
                             <div class="row">
@@ -54,8 +55,23 @@
 
                                     foreach ($details as $detail) :
                                     ?>
+                                        <?php $variants[$detail['product_lookup_id']] = getVariantByLookupId($detail['product_lookup_id']); ?>
                                         <tr class="bg-light">
-                                            <td><?= $detail['product_name'] ?></td>
+                                            <td>
+                                                <div class="d-flex">
+                                                    <img src="<?= BASE_URL . $detail['image'] ?>" alt="" width="50px">
+                                                    <p class="ms-1"><?=$detail['product_name']?></p>
+                                                </div>
+
+                                                <?php if (!empty($variants[$detail['product_lookup_id']])) : ?>
+                                                    <p>|
+                                                        <?php foreach ($variants[$detail['product_lookup_id']] as $variant) : ?>
+                                                            <?= $variant['attribute_value_name'] ?> |
+                                                        <?php endforeach ?>
+                                                    </p>
+
+                                                <?php endif ?>
+                                            </td>
                                             <td><?= $detail['product_price'] ?> VND</td>
                                             <td><?= $detail['detail_quantity'] ?></td>
                                             <td><?= $total_money[$i] ?> VND</td>

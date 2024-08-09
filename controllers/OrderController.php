@@ -4,6 +4,7 @@ function checkoutOrder()
     $view = 'order/checkout';
     $style = 'style/checkout';
     $script = 'checkout';
+    
     if (!empty($_POST)) {
         // Lấy dữ liệu
         $history = [];

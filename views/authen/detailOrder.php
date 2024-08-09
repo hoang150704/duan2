@@ -83,13 +83,17 @@
                         <div class="col-md-9">
                             <div class="card-body border rounded" style="background-color: #fff;">
                                 <a href="<?= BASE_URL . '?act=info' ?>" class="btn btn-primary mb-3">Quay lại</a>
+                                <?php if(!empty($_SESSION['errors'])): ?>
+                                    <p class="alert alert-danger"><?=$_SESSION['errors']?></p>
+                                    <?php endif ?>
+                                    <?php unset($_SESSION['errors']) ?>
                                 <div class="tab-content">
                                     <div class="active tab-pane" id="timeline">
                                         <div class="card">
                                             <?php foreach ($combinedData as $key => $value) : ?>
                                                 <div class="card-header p-2 ">
                                                     <h6 class="m-0 d-flex justify-content-between alert alert-primary">
-                                                        <p class="p-0 m-0">Chi tiết đơn hàng #<?=$value['orders'][0]['order']['id'] ?></p>
+                                                        <p class="p-0 m-0">Chi tiết đơn hàng #<?= $value['orders'][0]['order']['id'] ?></p>
                                                         <p class="p-0 m-0"><?= $value['status']['status_order_name'] ?></p>
                                                     </h6>
 
@@ -100,25 +104,35 @@
                                                         <div class="m-2">
                                                             <!-- Bắt đầu -->
                                                             <?php foreach ($value['orders'] as $order) : ?>
-                                                                <?php if($value['status']['id'] == 7): ?>
+                                                                <?php if ($value['status']['id'] == 7) : ?>
                                                                     <div class="row p-2 border rounded mb-3 " style="background-color: white;">
-                                                                    <h6 class="alert alert-warning m-0">Chúng tôi đã nhận được yêu cầu hoàn hàng của bạn. Chúng tôi sẽ liên hệ cho bạn sớm nhất</h6>
-                                                                </div>
+                                                                        <h6 class="alert alert-warning m-0">Chúng tôi đã nhận được yêu cầu hoàn hàng của bạn. Chúng tôi sẽ liên hệ cho bạn sớm nhất</h6>
+                                                                    </div>
                                                                 <?php endif ?>
                                                                 <div class="row p-2 border rounded mb-3 " style="background-color: white;">
                                                                     <!-- Địa chỉ giao hàng -->
                                                                     <div class="col-6 border-end">
-                                                                        <h6 class="border-bottom fs-6 pb-3 mb-3 fw-bold">Địa chỉ giao hàng</h6>
-                                                                        <p>Họ và tên: <?= $order['order']['order_account_name'] ?></p>
-                                                                        <p>Số điện thoại: <?= $order['order']['order_phone'] ?></p>
-                                                                        <p>Địa chỉ: <?= $order['order']['order_address'] ?></p>
-                                                                        <p>Ngày đặt hàng: <?= $order['order']['date_order'] ?></p>
-                                                                        <p>Ghi chú: <?= $order['order']['note'] ?></p>
+                                                                        <div>
+                                                                            <div class="border-bottom fs-6 pb-3 mb-3 fw-bold d-flex justify-content-between">
+                                                                                <h6>Địa chỉ giao hàng</h6>
+                                                                                <?php if($value['status']['id'] == 1 || $value['status']['id'] == 2 || $value['status']['id'] == 10 || $value['status']['id'] == 11): ?>
+                                                                                <a href="<?=BASE_URL.'?act=change-address&id='.$id?>">Sửa</a>
+                                                                                <?php endif ?>
+                                                                            </div>
+                                                                            <p>Họ và tên: <?= $order['order']['order_account_name'] ?></p>
+                                                                            <p>Số điện thoại: <?= $order['order']['order_phone'] ?></p>
+                                                                            <p>Địa chỉ: <?= $order['order']['order_address'] ?></p>
+                                                                            <p>Ngày đặt hàng: <?= $order['order']['date_order'] ?></p>
+                                                                            <p>Ghi chú: <?= $order['order']['note'] ?></p>
+                                                                        </div>
                                                                     </div>
                                                                     <div class="col-6">
                                                                         <section class="timeline_area section_padding_130">
                                                                             <div class="container">
-                                                                                <h6 class="border-bottom fs-6 pb-3 mb-3 fw-bold">Lịch trình</h6>
+                                                                                <div class="border-bottom fs-6 pb-3 mb-3 fw-bold">
+                                                                                    <h6>Lịch trình</h6>
+                                                                                   
+                                                                                </div>
                                                                                 <div class="card">
                                                                                     <div id="content">
                                                                                         <ul class="timeline">
@@ -141,13 +155,24 @@
 
                                                                     <?php $total = 0;
                                                                     foreach ($order['details'] as $detail) : ?>
+                                                                        <?php $variants[$detail['product_lookup_id']] = getVariantByLookupId($detail['product_lookup_id']); ?>
                                                                         <div class="row pb-3 mb-3 border-bottom">
                                                                             <!-- Sản phẩm -->
                                                                             <div class="col-2">
                                                                                 <img src="<?= BASE_URL . $detail['image'] ?>" class="border rounded" alt="">
                                                                             </div>
                                                                             <div class="col-8">
-                                                                                <h5><?= $detail['product_name'] ?></h5>
+                                                                                <?php if (empty($variants[$detail['product_lookup_id']])) : ?>
+                                                                                    <td class="product_name"><a href="#"><?= $detail['product_name'] ?></a></td>
+                                                                                <?php else : ?>
+                                                                                    <td class="product_name"><a href="#"><?= $detail['product_name'] ?></a>
+                                                                                        <p>|
+                                                                                            <?php foreach ($variants[$detail['product_lookup_id']] as $variant) : ?>
+                                                                                                <?= $variant['attribute_value_name'] ?> |
+                                                                                            <?php endforeach ?>
+                                                                                        </p>
+                                                                                    </td>
+                                                                                <?php endif ?>
                                                                                 <p>Số lượng: <?= $detail['detail_quantity'] ?></p>
                                                                             </div>
                                                                             <div class="col-2 d-flex justify-content-between">
@@ -191,29 +216,29 @@
                                                                             </form>
                                                                             <?php if (in_array($value['status']['id'], [4])) : ?>
                                                                                 <form id="main-form-2" action="" method="POST">
-                                                                                <button type="submit" name="success" class="btn btn-success mx-auto" onclick="return confirm('Bạn có chắc chắn hoàn thành đơn hàng không !! Bạn sẽ không thể hoàn hàng nếu đồng ý !!')">Hoàn thành</button>
+                                                                                    <button type="submit" name="success" class="btn btn-success mx-auto" onclick="return confirm('Bạn có chắc chắn hoàn thành đơn hàng không !! Bạn sẽ không thể hoàn hàng nếu đồng ý !!')">Hoàn thành</button>
                                                                                 </form>
                                                                             <?php endif; ?>
                                                                             <?php if (in_array($value['status']['id'], [10])) : ?>
                                                                                 <form id="main-form-3" action="" method="POST">
-                                                                                    <input type="hidden" name="id" value="<?=$order['order']['id']?>">
-                                                                                    <input type="hidden" name="total_money" value="<?=$order['order']['total_money']?>">
-                                                                                    <input type="hidden" name="order_code" value="<?=$order['order']['order_code']?>">
-                                                                                <button type="submit" name="payment" class="btn btn-success mx-auto" >Thanh toán</button>
+                                                                                    <input type="hidden" name="id" value="<?= $order['order']['id'] ?>">
+                                                                                    <input type="hidden" name="total_money" value="<?= $order['order']['total_money'] ?>">
+                                                                                    <input type="hidden" name="order_code" value="<?= $order['order']['order_code'] ?>">
+                                                                                    <button type="submit" name="payment" class="btn btn-success mx-auto">Thanh toán</button>
                                                                                 </form>
                                                                             <?php endif; ?>
+                                                                        </div>
+                                                                        <!-- Form yêu cầu lý do hủy đơn hàng -->
+                                                                        <form id="reason-form" class="hidden" action="" method="POST">
+                                                                            <div class="form-group">
+                                                                                <label for="reason">Nhập lý do:</label>
+                                                                                <textarea id="reason" name="reason" class="form-control" rows="3" required></textarea>
+                                                                                <input type="hidden" value="<?= $value['status']['id'] ?>">
                                                                             </div>
-                                                                            <!-- Form yêu cầu lý do hủy đơn hàng -->
-                                                                            <form id="reason-form" class="hidden" action="" method="POST">
-                                                                                <div class="form-group">
-                                                                                    <label for="reason">Nhập lý do:</label>
-                                                                                    <textarea id="reason" name="reason" class="form-control" rows="3" required></textarea>
-                                                                                    <input type="hidden" value="<?= $value['status']['id'] ?>">
-                                                                                </div>
-                                                                                <button type="submit" class="btn btn-primary" name="cancel">Gửi lý do</button>
-                                                                                <button type="button" class="btn btn-secondary" onclick="cancelForm()">Quay lại</button>
-                                                                            </form>
-                                                                        
+                                                                            <button type="submit" class="btn btn-primary" name="cancel">Gửi lý do</button>
+                                                                            <button type="button" class="btn btn-secondary" onclick="cancelForm()">Quay lại</button>
+                                                                        </form>
+
                                                                     </div>
                                                                 <?php endif; ?>
                                                             <?php endforeach ?>

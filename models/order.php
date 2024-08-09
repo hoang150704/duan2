@@ -37,6 +37,26 @@ if (!function_exists('listAllOrderByAccountId')) {
         }
     }
 }
+// Lấy 1 đơn hàng theo id
+if (!function_exists('getOrderById')) {
+    function getOrderById($id)
+    {
+        try {
+            //Nếu không trùng trả về true
+
+            $sql = "SELECT * FROM `order_shop` WHERE id = :id";
+
+            $stmt = $GLOBALS['conn']->prepare($sql);
+            $stmt->bindParam(":id", $id);
+            $stmt->execute();
+
+            return $stmt->fetch();
+        } catch (\Exception $e) {
+            //throw $th;
+            debug($e);
+        }
+    }
+}
 // 
 if (!function_exists('getOrder')) {
     function getOrder()

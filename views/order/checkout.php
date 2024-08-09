@@ -41,11 +41,22 @@
 
                         <div class="card">
                             <?php foreach ($_SESSION['order']['cart'] as $order) : ?>
-
+                                <?php $variants[$order['product_lookup_id']] = getVariantByLookupId($order['product_lookup_id']); ?>
                                 <li class="d-flex p-2">
-                                    <img src="<?= BASE_URL . $order['main_image'] ?>" alt="" style="width: 50px;">
+                                    <img src="<?= BASE_URL . $order['main_image'] ?>" alt="" style="width: 60px;" >
                                     <div class="ps-2">
-                                        <h6 class="my-0"><?= $order['product_name'] ?></h6>
+                                        <?php if (empty($variants[$order['product_lookup_id']])) : ?>
+                                            <td class="product_name"><a href="#"><?= $order['product_name'] ?></a></td>
+                                        <?php else : ?>
+                                            <td class="product_name"><a href="#"><?= $order['product_name'] ?></a>
+                                                <p>|
+                                                    <?php foreach ($variants[$order['product_lookup_id']] as $variant) : ?>
+                                                        <?= $variant['attribute_value_name'] ?> |
+                                                    <?php endforeach ?>
+                                                </p>
+                                            </td>
+                                        <?php endif ?>
+                                        <p></p>
                                         <div class="d-flex">
                                             <span></span>
                                             <span class="text-muted"><?= $order['quantity'] ?>x<?= $order['price'] ?></span>

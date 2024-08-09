@@ -23,12 +23,23 @@
                             <div class="mini_cart">
                                 <?php if (!empty($_SESSION['cart'])) : ?>
                                     <?php foreach ($_SESSION['cart'] as $cart) : ?>
+                                        <?php  $variants[$cart['product_lookup_id']] = getVariantByLookupId($cart['product_lookup_id']); ?>
                                         <div class="cart_item top">
                                             <div class="cart_img">
                                                 <a href="#"><img src="<?= BASE_URL . $cart['main_image'] ?>" alt=""></a>
                                             </div>
                                             <div class="cart_info">
-                                                <a href="#"><?= $cart['product_name'] ?></a>
+                                            <?php if (empty($variants[$cart['product_lookup_id']])) : ?>
+                                                        <td class="product_name"><a href="#"><?= $cart['product_name'] ?></a></td>
+                                                    <?php else : ?>
+                                                        <td class="product_name"><a href="#"><?= $cart['product_name'] ?></a>
+                                                            <p>|
+                                                                <?php foreach($variants[$cart['product_lookup_id']] as $variant): ?>
+                                                                     <?=$variant['attribute_value_name']?> |
+                                                                 <?php endforeach ?>   
+                                                            </p>
+                                                        </td>
+                                                    <?php endif ?>
                                                 <span class="product_price" data-price="<?= $cart['price'] ?>" data-quantity="<?= $cart['quantity'] ?>"><?= $cart['quantity'] ?> x <?= $cart['price'] ?></span>
                                             </div>
                                            
